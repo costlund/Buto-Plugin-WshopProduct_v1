@@ -1,0 +1,57 @@
+
+product_type:
+  sql: "select name, description, description_more from wshop_product_type_i18n where language=? and product_type_id=?;"
+  params:
+    language:
+      type: s
+      value: sv
+    product_type_id:
+      type: s
+      value: _
+  select:
+    - name
+    - description
+    - description_more
+      
+product_type_list:
+  sql: "select product_type_id, name, description from wshop_product_type_i18n where language=? order by name;"
+  params:
+    language:
+      type: s
+      value: sv
+  select:
+    - product_type_id
+    - name
+    - description
+      
+
+
+product_list:
+  sql: "select wshop_product.id, wshop_product_i18n.name, wshop_product_i18n.description from wshop_product_i18n inner join wshop_product on wshop_product_i18n.product_id=wshop_product.id where wshop_product_i18n.language=? and wshop_product.product_type_id=? order by wshop_product.sort, wshop_product_i18n.name;"
+  params:
+    language:
+      type: s
+      value: sv
+    product_type_id:
+      type: s
+      value: _
+  select:
+    - id
+    - name
+    - description
+
+product:
+  sql: "select wshop_product.id, wshop_product.product_type_id, wshop_product_i18n.name, wshop_product_i18n.description, wshop_product_i18n.description_more from wshop_product_i18n inner join wshop_product on wshop_product_i18n.product_id=wshop_product.id where wshop_product_i18n.language=? and wshop_product.id=?;"
+  params:
+    language:
+      type: s
+      value: sv
+    id:
+      type: s
+      value: _
+  select:
+    - id
+    - product_type_id
+    - name
+    - description
+    - description_more

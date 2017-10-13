@@ -1,0 +1,121 @@
+extra:
+  _description: Extra field to add to each table if not exist in schema.
+  field:
+    created_at:
+      type: timestamp
+      default: CURRENT_TIMESTAMP
+    updated_at:
+      type: timestamp
+      default: 'null'
+    created_by:
+      type: varchar(50)
+    updated_by:
+      type: varchar(50)
+tables:
+  wshop_product_type:
+    _description: Product type
+    field:
+      id:
+        type: varchar(50)
+        not_null: true
+        primary_key: true
+  wshop_product_type_i18n:
+    field:
+      product_type_id:
+        type: varchar(50)
+        not_null: true
+        primary_key: true
+        foreing_key:
+          reference_table: wshop_product_type
+          reference_field: id
+          on_delete: CASCADE
+          on_update: CASCADE
+      language:
+        type: varchar(2)
+        not_null: true
+        primary_key: true
+      name:
+        type: varchar(50)
+        default: 'null'
+      description:
+        type: mediumtext
+      description_more:
+        type: mediumtext
+  wshop_product:
+    _description: Product
+    field:
+      id:
+        type: varchar(50)
+        not_null: true
+        primary_key: true
+      product_type_id:
+        type: varchar(50)
+        default: 'null'
+        foreing_key:
+          reference_table: wshop_product_type
+          reference_field: id
+          on_delete: RESTRICT
+          on_update: CASCADE
+      sort:
+        type: int(11)
+        default: 'null'
+  wshop_product_param:
+    field:
+      product_id:
+        type: varchar(50)
+        not_null: true
+        primary_key: true
+        foreing_key:
+          reference_table: wshop_product
+          reference_field: id
+          on_delete: CASCADE
+          on_update: CASCADE
+      type:
+        type: varchar(50)
+        not_null: true
+        primary_key: true
+      value:
+        type: mediumtext
+        default: 'null'
+  wshop_product_i18n:
+    field:
+      product_id:
+        type: varchar(50)
+        not_null: true
+        primary_key: true
+        foreing_key:
+          reference_table: wshop_product
+          reference_field: id
+          on_delete: CASCADE
+          on_update: CASCADE
+      language:
+        type: varchar(2)
+        not_null: true
+        primary_key: true
+      name:
+        type: varchar(50)
+        default: 'null'
+      description:
+        type: mediumtext
+      description_more:
+        type: mediumtext
+  wshop_article:
+    _description: Article
+    field:
+      id:
+        type: varchar(50)
+        not_null: true
+        primary_key: true
+      product_id:
+        type: varchar(50)
+        default: 'null'
+        foreing_key:
+          reference_table: wshop_product
+          reference_field: id
+          on_delete: RESTRICT
+          on_update: CASCADE
+      name:
+        type: varchar(50)
+        default: 'null'
+
+

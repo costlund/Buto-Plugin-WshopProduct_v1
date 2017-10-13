@@ -1,0 +1,29 @@
+list_group_item:
+  type: a
+  attribute: {id: a, class: 'list-group-item'}
+  innerHTML:
+    -
+      type: div
+      attribute: {class: 'row'}
+      innerHTML:
+        -
+          type: div
+          attribute: {class: 'col-md-9'}
+          innerHTML:
+            -
+              type: h4
+              attribute: {id: h4, class: 'list-group-item-heading'}
+              innerHTML: _
+            -
+              type: p
+              attribute: {id: p, class: 'list-group-item-text'}
+        -
+          type: div
+          attribute: {id: right_column, class: 'col-md-3', style: 'text-align:center'}
+          innerHTML:
+#            -
+#              type: img
+#              attribute: {id: img, src: '_', class: 'img-thumbnail', style: 'width:120px;'}
+
+
+  
