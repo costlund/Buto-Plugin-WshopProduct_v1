@@ -12,6 +12,8 @@ class PluginWshopProduct_v1{
       wfPlugin::includeonce('wf/array');
       $settings = wfPlugin::getPluginSettings('wshop/product_v1', true);
       $this->settings = new PluginWfArray($settings->get('settings'));
+      $this->settings->set('img_web_dir', wfSettings::replaceDir( $this->settings->get('img_web_dir')));
+      $this->settings->set('img_sys_dir', wfSettings::replaceDir( $this->settings->get('img_sys_dir')));
       wfPlugin::includeonce('wf/mysql');
       $this->sql = wfSettings::getSettingsAsObject('/plugin/wshop/product_v1/mysql/sql.yml');
    }
@@ -127,7 +129,9 @@ class PluginWshopProduct_v1{
     }
   }
   public function imageExist($id){
-    $img_path_public = wfArray::get($GLOBALS, 'sys/app_dir').$this->settings->get('img_sys_dir').'/product';
+    //$img_path_public = wfArray::get($GLOBALS, 'sys/app_dir').$this->settings->get('img_sys_dir').'/product';
+    $img_path_public = wfArray::get($GLOBALS, 'sys/web_dir').$this->settings->get('img_web_dir').'/product';
+    //wfHelp::yml_dump(array($img_path_public, $id));
     if(wfFilesystem::fileExist( $img_path_public.'/'.$id.'.jpg')){
       return true;
     }else{
@@ -140,9 +144,68 @@ class PluginWshopProduct_v1{
     return $img->get();
   }
   /**
-   * Widget to show list-group of product types.
+   * List product types in a navbar. Can be placed direct in navbar or in a dropdown menu.
    */
-  public function widget_product_type_list($data){
+  public function widget_products_navbar($data){
+    /**
+     * Get rs.
+     */
+    $rs = $this->getRsProductTypeList();
+    /**
+     * Create element and render.
+     */
+    $element = array();
+    foreach ($rs as $key => $value) {
+      $element[] = wfDocument::createHtmlElement('li', array(wfDocument::createHtmlElement('a', $value['name'], array('href' => '/p/products/type/'.$value['product_type_id'].'/'. $this->text_to_link($value['name'])))));
+    }
+    wfDocument::renderElement($element);
+  }
+  /**
+   * Bootstrap Carousel with product categorys.
+   */
+  public function widget_carousel($data){
+    /**
+     * Image path.
+     */
+    $img_path = $this->settings->get('img_web_dir').'/type';
+    /**
+     * 
+     */
+    wfPlugin::includeonce('wf/yml');
+    /**
+     * Get rs and create elements.
+     */
+    $rs = $this->getRsProductTypeList();
+    $first = true;
+    $caroulse = new PluginWfYml("/plugin/wshop/product_v1/element/carousel.yml");
+    $carousel_wshop_inner = array();
+    foreach ($rs as $key => $value) {
+      $active = '';
+      if($first){
+        $first = false;
+        $active = 'active';
+      }
+      $carousel_wshop_inner[] = wfDocument::createHtmlElement('div', array(
+        wfDocument::createHtmlElement('a', array(
+          wfDocument::createHtmlElement('img', null, array('src' => $img_path.'/'.$value['product_type_id'].'.jpg')),
+          wfDocument::createHtmlElement('div', array(
+            wfDocument::createHtmlElement('h1', $value['name']),
+            wfDocument::createHtmlElement('p1', $value['description'])
+          ), array('class' => 'carousel-caption'))
+        ), array('href' => '/p/products/type/'.$value['product_type_id'].'/'. $this->text_to_link($value['name'])))
+      ), array('class' => "item $active"));
+    }
+    $caroulse->setById('carousel-wshop-inner', 'innerHTML', $carousel_wshop_inner);
+    wfDocument::renderElement(array($caroulse->get()));
+  }
+  /**
+   * 
+   */
+  private function getRsProductTypeList(){
+    /**
+     * 
+     */
+    $rs = null;
     /**
      * Cache file name.
      */
@@ -177,6 +240,13 @@ class PluginWshopProduct_v1{
        */
       $rs = $yml->get();
     }
+    return $rs;
+  }
+  /**
+   * Widget to show list-group of product types.
+   */
+  public function widget_product_type_list($data){
+    $rs = $this->getRsProductTypeList();
     /**
      * Create elements.
      */

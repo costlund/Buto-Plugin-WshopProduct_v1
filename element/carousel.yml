@@ -1,0 +1,104 @@
+type: div
+attribute:
+  id: carousel-wshop
+  class: carousel slide
+  data-ride: carousel
+innerHTML:
+  -
+    type: ol
+    attribute:
+      class: carousel-indicators
+    innerHTML:
+      -
+        type: li
+        attribute:
+          data-target: '#carousel-wshop'
+          data-slide-to: 0
+          class: active
+      -
+        type: li
+        attribute:
+          data-target: '#carousel-wshop'
+          data-slide-to: 1
+  -
+    type: div
+    attribute:
+      class: carousel-inner
+      role: listbox
+      id: carousel-wshop-inner
+    innerHTML:
+      -
+        type: div
+        attribute:
+          class: item active
+        innerHTML:
+          -
+            type: a
+            attribute:
+              onclick: "alert(8)"
+            innerHTML:
+              -
+                type: img
+                attribute:
+                  src: '/data/theme/[theme]/carousel/carousel_1.jpg'
+              -
+                type: div
+                attribute:
+                  class: carousel-caption
+                innerHTML:
+                  -
+                    type: h1
+                    innerHTML: Lax
+                  -
+                    type: p
+                    innerHTML: Smakar utsökt.
+      -
+        type: div
+        attribute:
+          class: item
+        innerHTML:
+          -
+            type: img
+            attribute:
+              src: '/data/theme/[theme]/carousel/carousel_2.jpg'
+          -
+            type: div
+            attribute:
+              class: carousel-caption
+            innerHTML: Två
+  -
+    type: a
+    attribute:
+       class: left carousel-control
+       href: '#carousel-wshop'
+       role: button 
+       data-slide: prev
+    innerHTML:
+      -
+        type: span
+        attribute:
+          class: glyphicon glyphicon-chevron-left
+          aria-hidden: true
+      -
+        type: span
+        attribute:
+          class: sr-only
+        innerHTML: Previous
+  -
+    type: a
+    attribute:
+       class: right carousel-control
+       href: '#carousel-wshop'
+       role: button 
+       data-slide: next
+    innerHTML:
+      -
+        type: span
+        attribute:
+          class: glyphicon glyphicon-chevron-right
+          aria-hidden: true
+      -
+        type: span
+        attribute:
+          class: sr-only
+        innerHTML: Next
