@@ -22,12 +22,13 @@ class PluginWshopProduct_v1{
    * 
    */
   public function event_load_data(){
+    $language = wfI18n::getLanguage();
     /**
      * Product type.
      * Used in widget_product_list.
      */
     if(wfArray::get($GLOBALS, 'sys/method')=='products' && wfRequest::get('type')){
-      $product_type = $this->getProductType(wfArray::get($GLOBALS, 'sys/settings/i18n/language'), wfRequest::get('type'));
+      $product_type = $this->getProductType($language, wfRequest::get('type'));
       if($product_type){
         $GLOBALS = wfArray::set($GLOBALS, 'sys/wshop/product_type', $product_type);
         $GLOBALS = wfArray::set($GLOBALS, 'sys/page/settings/title', $product_type->get('name'));
@@ -39,11 +40,11 @@ class PluginWshopProduct_v1{
      * Used in ....
      */
     if(wfArray::get($GLOBALS, 'sys/method')=='product' && wfRequest::get('id')){
-      $product = $this->getProduct(wfArray::get($GLOBALS, 'sys/settings/i18n/language'), wfRequest::get('id'));
+      $product = $this->getProduct($language, wfRequest::get('id'));
       if($product){
         $GLOBALS = wfArray::set($GLOBALS, 'sys/wshop/product', $product);
         $GLOBALS = wfArray::set($GLOBALS, 'sys/page/settings/description', $product->get('description'));
-        $product_type = $this->getProductType(wfArray::get($GLOBALS, 'sys/settings/i18n/language'), $product->get('product_type_id'));
+        $product_type = $this->getProductType($language, $product->get('product_type_id'));
         if($product_type){
           $GLOBALS = wfArray::set($GLOBALS, 'sys/wshop/product_type', $product_type);
         }
@@ -87,6 +88,7 @@ class PluginWshopProduct_v1{
    * @param type $data
    */
   public function widget_product_list($data){
+    $language = wfI18n::getLanguage();
     if(wfArray::get($GLOBALS, 'sys/wshop/product_type')){
       $data = new PluginWfArray($data);
       /**
@@ -115,7 +117,7 @@ class PluginWshopProduct_v1{
         /**
          * Standard.
          */
-        $this->sql->set('product_list/params/language/value', wfArray::get($GLOBALS, 'sys/settings/i18n/language'));
+        $this->sql->set('product_list/params/language/value', $language);
         $this->sql->set('product_list/params/product_type_id/value', wfRequest::get('type'));
         $this->mysql = new PluginWfMysql();
         $this->mysql->open($this->settings->get('mysql'));
@@ -209,7 +211,7 @@ class PluginWshopProduct_v1{
     /**
      * Cache file name.
      */
-    $language = wfArray::get($GLOBALS, 'sys/settings/i18n/language');
+    $language = wfI18n::getLanguage();
     $cache_dir_file = wfArray::get($GLOBALS, 'sys/app_dir').$this->settings->get('img_sys_dir').'/cache/widget_product_type_list_'.$language.'.yml';
     /**
      * Delete file if not from today.
@@ -226,7 +228,7 @@ class PluginWshopProduct_v1{
        */
       $this->mysql = new PluginWfMysql();
       $this->mysql->open($this->settings->get('mysql'));
-      $this->sql->set('product_type_list/params/language/value', wfArray::get($GLOBALS, 'sys/settings/i18n/language'));
+      $this->sql->set('product_type_list/params/language/value', $language);
       $this->mysql->execute($this->sql->get('product_type_list'));
       $rs = $this->mysql->getStmtAsArray();
       /**
@@ -256,12 +258,26 @@ class PluginWshopProduct_v1{
       'p' => wfDocument::createHtmlElement('p', 'Some text to show out.', array('class' => 'list-group-item-text'))
       ), array('class' => 'list-group-item'));
     /**
+     * Product.
+     */
+    if(wfArray::get($GLOBALS, 'sys/wshop/product')){
+      $product = wfArray::get($GLOBALS, 'sys/wshop/product');
+    }else{
+      $product = new PluginWfArray();
+    }
+    /**
      * Set elements.
      */
     foreach ($rs as $key => $value) {
       $a->set('innerHTML/h4/innerHTML', $value['name']);
       $a->set('innerHTML/p/innerHTML', $value['description']);
       $a->set('attribute/href', '/p/products/type/'.$value['product_type_id'].'/'. $this->text_to_link($value['name']));
+      if(wfRequest::get('type')==$value['product_type_id'] || $product->get('product_type_id') == $value['product_type_id']){
+        $a->set('attribute/class', 'list-group-item active');
+      }else{
+        $a->set('attribute/class', 'list-group-item');
+      }
+      
       $list_group->set('innerHTML/', $a->get());
     }
     /**
@@ -342,7 +358,7 @@ class PluginWshopProduct_v1{
    * PRODUCT flash random.
    */
   public function widget_product_flash_random(){
-    $language = wfArray::get($GLOBALS, 'sys/settings/i18n/language');
+    $language = wfI18n::getLanguage();
     $cache_dir_file = wfArray::get($GLOBALS, 'sys/app_dir').$this->settings->get('img_sys_dir').'/cache/widget_product_flash_random_'.$language.'.yml';
     /**
      * Delete file if not from today.
