@@ -209,20 +209,29 @@ class PluginWshopProduct_v1{
      */
     $rs = null;
     /**
-     * Cache file name.
+     * New code...
      */
     $language = wfI18n::getLanguage();
-    $cache_dir_file = wfArray::get($GLOBALS, 'sys/app_dir').$this->settings->get('img_sys_dir').'/cache/widget_product_type_list_'.$language.'.yml';
-    /**
-     * Delete file if not from today.
-     */
-    $this->deleteFileIfNotFromToday($cache_dir_file);
-    /**
-     * Get from db or cache file.
-     */
-    wfPlugin::includeonce('wf/yml');
-    $yml = new PluginWfYml($cache_dir_file);
-    if(!$yml->file_exists){
+    if(wfFilesystem::isCache()){
+      $cache_file = 'plugin_wshop_product_v1_product_type_list_'.$language.'.yml.cache';
+      if(wfFilesystem::fileExist(wfFilesystem::getCacheFolder().'/'.$cache_file)){
+        /**
+         * Cache exist.
+         * Get it.
+         */
+        $rs = wfFilesystem::getCacheFile($cache_file);
+      }else{
+        /**
+         * Get data.
+         */
+        $this->mysql = new PluginWfMysql();
+        $this->mysql->open($this->settings->get('mysql'));
+        $this->sql->set('product_type_list/params/language/value', $language);
+        $this->mysql->execute($this->sql->get('product_type_list'));
+        $rs = $this->mysql->getStmtAsArray();
+        wfFilesystem::saveFile(wfFilesystem::getCacheFolder().'/'.$cache_file, serialize($rs));
+      }
+    }else{
       /**
        * Get data.
        */
@@ -231,16 +240,6 @@ class PluginWshopProduct_v1{
       $this->sql->set('product_type_list/params/language/value', $language);
       $this->mysql->execute($this->sql->get('product_type_list'));
       $rs = $this->mysql->getStmtAsArray();
-      /**
-       * Save to file.
-       */
-      $yml->set(null, $rs);
-      $yml->save();
-    }else{
-      /**
-       * Get data from file.
-       */
-      $rs = $yml->get();
     }
     return $rs;
   }
@@ -354,49 +353,59 @@ class PluginWshopProduct_v1{
     wfPlugin::includeonce('wf/yml');
     return new PluginWfYml('/plugin/wshop/product_v1/element/'.$name.'.yml');
   }
+  private function getMysqlRandomProductTypes(){
+    $language = wfI18n::getLanguage();
+    /**
+     * Get data from db.
+     * First get one id for each category random.
+     */
+    $this->mysql = new PluginWfMysql();
+    $this->mysql->open($this->settings->get('mysql'));
+    $rs =  $this->mysql->runSql("select id, ( select id from wshop_product where product_type_id=wshop_product_type.id order by rand() limit 1) as random_product_id from wshop_product_type;");
+    $ids = '';
+    foreach ($rs['data'] as $key => $value) {
+      $ids .= "'".$value['random_product_id']."',";
+    }
+    if(strlen($ids)==0) return null;
+    $ids = substr($ids, 0, strlen($ids)-1);
+    /**
+     * Get products.
+     */
+    $rs =  $this->mysql->runSql("select wshop_product.id, wshop_product_i18n.* from wshop_product inner join wshop_product_i18n on wshop_product.id=wshop_product_i18n.product_id where wshop_product.id in ($ids) and language='$language';");
+    return $rs;
+  }
   /**
    * PRODUCT flash random.
    */
   public function widget_product_flash_random(){
     $language = wfI18n::getLanguage();
-    $cache_dir_file = wfArray::get($GLOBALS, 'sys/app_dir').$this->settings->get('img_sys_dir').'/cache/widget_product_flash_random_'.$language.'.yml';
     /**
-     * Delete file if not from today.
+     * New code...
      */
-    $this->deleteFileIfNotFromToday($cache_dir_file);
-    /**
-     * Get from db or cache file.
-     */
-    wfPlugin::includeonce('wf/yml');
-    $yml = new PluginWfYml($cache_dir_file);
-    if(!$yml->file_exists){
+    if(wfFilesystem::isCache()){
+      $cache_file = 'plugin_wshop_product_v1_product_flash_random_'.$language.'.yml.cache';
       /**
-       * Get data from db.
-       * First get one id for each category random.
+       * Delete file if exist and not from today.
        */
-      $this->mysql = new PluginWfMysql();
-      $this->mysql->open($this->settings->get('mysql'));
-      $rs =  $this->mysql->runSql("select id, ( select id from wshop_product where product_type_id=wshop_product_type.id order by rand() limit 1) as random_product_id from wshop_product_type;");
-      $ids = '';
-      foreach ($rs['data'] as $key => $value) {
-        $ids .= "'".$value['random_product_id']."',";
+      $this->deleteFileIfNotFromToday(wfFilesystem::getCacheFolder().'/'.$cache_file);
+      if(wfFilesystem::fileExist(wfFilesystem::getCacheFolder().'/'.$cache_file)){
+        /**
+         * Cache exist.
+         * Get it.
+         */
+        $rs = wfFilesystem::getCacheFile($cache_file);
+      }else{
+        /**
+         * Get data.
+         */
+        $rs = $this->getMysqlRandomProductTypes();
+        wfFilesystem::saveFile(wfFilesystem::getCacheFolder().'/'.$cache_file, serialize($rs));
       }
-      if(strlen($ids)==0) return null;
-      $ids = substr($ids, 0, strlen($ids)-1);
-      /**
-       * Get products.
-       */
-      $rs =  $this->mysql->runSql("select wshop_product.id, wshop_product_i18n.* from wshop_product inner join wshop_product_i18n on wshop_product.id=wshop_product_i18n.product_id where wshop_product.id in ($ids) and language='$language';");
-      /**
-       * Save to file.
-       */
-      $yml->set(null, $rs);
-      $yml->save();
     }else{
       /**
-       * Get data from file.
+       * Get data.
        */
-      $rs = $yml->get();
+      $rs = $this->getMysqlRandomProductTypes();
     }
     /**
      * Render.
