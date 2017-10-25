@@ -1,4 +1,3 @@
-
 product_type:
   sql: "select name, description, description_more from wshop_product_type_i18n where language=? and product_type_id=?;"
   params:
@@ -12,9 +11,8 @@ product_type:
     - name
     - description
     - description_more
-      
 product_type_list:
-  sql: "select product_type_id, name, description from wshop_product_type_i18n where language=? order by name;"
+  sql: "select product_type_id, name, description from wshop_product_type_i18n inner join wshop_product_type on wshop_product_type_i18n.product_type_id=wshop_product_type.id where language=? order by sort, name;"
   params:
     language:
       type: s
@@ -23,9 +21,6 @@ product_type_list:
     - product_type_id
     - name
     - description
-      
-
-
 product_list:
   sql: "select wshop_product.id, wshop_product_i18n.name, wshop_product_i18n.description from wshop_product_i18n inner join wshop_product on wshop_product_i18n.product_id=wshop_product.id where wshop_product_i18n.language=? and wshop_product.product_type_id=? order by wshop_product.sort, wshop_product_i18n.name;"
   params:
@@ -39,7 +34,6 @@ product_list:
     - id
     - name
     - description
-
 product:
   sql: "select wshop_product.id, wshop_product.product_type_id, wshop_product_i18n.name, wshop_product_i18n.description, wshop_product_i18n.description_more from wshop_product_i18n inner join wshop_product on wshop_product_i18n.product_id=wshop_product.id where wshop_product_i18n.language=? and wshop_product.id=?;"
   params:

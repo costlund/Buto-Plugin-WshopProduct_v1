@@ -19,6 +19,9 @@ tables:
         type: varchar(50)
         not_null: true
         primary_key: true
+      sort:
+        type: int(11)
+        default: 'null'
   wshop_product_type_i18n:
     field:
       product_type_id:
