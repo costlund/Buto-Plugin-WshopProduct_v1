@@ -111,7 +111,6 @@ class PluginWshopProduct_v1{
         wfPlugin::includeonce($data->get("data/type/".wfRequest::get('type')."/method/plugin"));
         $obj = wfSettings::getPluginObj($data->get("data/type/".wfRequest::get('type')."/method/plugin"));
         $method = $data->get("data/type/".wfRequest::get('type')."/method/method");
-        //wfDocument::renderElement( array(wfDocument::createHtmlElement('div', array($obj->$method($this)), array('class' => 'table-responsive'))));
         wfDocument::renderElement(array($obj->$method($this)));
       }else{
         /**
@@ -131,9 +130,7 @@ class PluginWshopProduct_v1{
     }
   }
   public function imageExist($id){
-    //$img_path_public = wfArray::get($GLOBALS, 'sys/app_dir').$this->settings->get('img_sys_dir').'/product';
     $img_path_public = wfArray::get($GLOBALS, 'sys/web_dir').$this->settings->get('img_web_dir').'/product';
-    //wfHelp::yml_dump(array($img_path_public, $id));
     if(wfFilesystem::fileExist( $img_path_public.'/'.$id.'.jpg')){
       return true;
     }else{
