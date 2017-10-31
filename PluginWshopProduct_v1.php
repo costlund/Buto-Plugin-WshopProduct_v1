@@ -186,7 +186,7 @@ class PluginWshopProduct_v1{
       }
       $carousel_wshop_inner[] = wfDocument::createHtmlElement('div', array(
         wfDocument::createHtmlElement('a', array(
-          wfDocument::createHtmlElement('img', null, array('src' => $img_path.'/'.$value['product_type_id'].'.jpg')),
+          wfDocument::createHtmlElement('img', null, array('src' => $img_path.'/'.$value['product_type_id'].'.jpg', 'style' => 'width:100%')),
           wfDocument::createHtmlElement('div', array(
             wfDocument::createHtmlElement('h1', $value['name']),
             wfDocument::createHtmlElement('p1', $value['description'])
