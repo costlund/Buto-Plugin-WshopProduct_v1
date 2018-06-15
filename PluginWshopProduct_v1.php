@@ -177,6 +177,7 @@ class PluginWshopProduct_v1{
     $rs = $this->getRsProductTypeList();
     $first = true;
     $caroulse = new PluginWfYml("/plugin/wshop/product_v1/element/carousel.yml");
+    $carousel_wshop_indecators = array();
     $carousel_wshop_inner = array();
     foreach ($rs as $key => $value) {
       $active = '';
@@ -184,9 +185,10 @@ class PluginWshopProduct_v1{
         $first = false;
         $active = 'active';
       }
+      $carousel_wshop_indecators[] = wfDocument::createHtmlElement('li', null, array('class' => "$active", 'data-target' => '#carousel-wshop', 'data-slide-to' => $key));
       $carousel_wshop_inner[] = wfDocument::createHtmlElement('div', array(
         wfDocument::createHtmlElement('a', array(
-          wfDocument::createHtmlElement('img', null, array('src' => $img_path.'/'.$value['product_type_id'].'.jpg', 'style' => 'width:100%')),
+          wfDocument::createHtmlElement('img', null, array('src' => $img_path.'/'.$value['product_type_id'].'.jpg')),
           wfDocument::createHtmlElement('div', array(
             wfDocument::createHtmlElement('h1', $value['name']),
             wfDocument::createHtmlElement('p1', $value['description'])
@@ -194,6 +196,7 @@ class PluginWshopProduct_v1{
         ), array('href' => '/p/products/type/'.$value['product_type_id'].'/'. $this->text_to_link($value['name'])))
       ), array('class' => "item $active"));
     }
+    $caroulse->setById('carousel-wshop-indicators', 'innerHTML', $carousel_wshop_indecators);
     $caroulse->setById('carousel-wshop-inner', 'innerHTML', $carousel_wshop_inner);
     wfDocument::renderElement(array($caroulse->get()));
   }
