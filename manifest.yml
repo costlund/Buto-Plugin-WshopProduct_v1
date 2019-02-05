@@ -1,5 +1,8 @@
-version: '1.0'
+version: '1.1'
 history:
+  '1.1':
+    date: '2019-02-05'
+    description: 'Add support for Bootstrap 4 to carousel widget.'
   '1.0':
     date: '2019-02-05'
     description: 'Manifest created.'
@@ -13,6 +16,9 @@ plugin:
   -
     name: wf/yml
     version: '1.1'
+  -
+    name: bootstrap/carousel_v1
+    version: '1.0'
 sys:
   -
     name: mercury

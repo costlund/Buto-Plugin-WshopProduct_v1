@@ -175,30 +175,62 @@ class PluginWshopProduct_v1{
      * Get rs and create elements.
      */
     $rs = $this->getRsProductTypeList();
-    $first = true;
-    $caroulse = new PluginWfYml("/plugin/wshop/product_v1/element/carousel.yml");
-    $carousel_wshop_indecators = array();
-    $carousel_wshop_inner = array();
-    foreach ($rs as $key => $value) {
-      $active = '';
-      if($first){
-        $first = false;
-        $active = 'active';
+    /**
+     * Detect Bootstrap version.
+     */
+    $bootstrap = '3';
+    $user = wfUser::getSession();
+    if($user->get('plugin/twitter/bootstrap413v/include')){
+      $bootstrap = '4';
+    }    
+    /**
+     * 
+     */
+    if($bootstrap=='3'){
+      $first = true;
+      $caroulse = new PluginWfYml("/plugin/wshop/product_v1/element/carousel.yml");
+      $carousel_wshop_indecators = array();
+      $carousel_wshop_inner = array();
+      foreach ($rs as $key => $value) {
+        $active = '';
+        if($first){
+          $first = false;
+          $active = 'active';
+        }
+        $carousel_wshop_indecators[] = wfDocument::createHtmlElement('li', null, array('class' => "$active", 'data-target' => '#carousel-wshop', 'data-slide-to' => $key));
+        $carousel_wshop_inner[] = wfDocument::createHtmlElement('div', array(
+          wfDocument::createHtmlElement('a', array(
+            wfDocument::createHtmlElement('img', null, array('src' => $img_path.'/'.$value['product_type_id'].'.jpg')),
+            wfDocument::createHtmlElement('div', array(
+              wfDocument::createHtmlElement('h1', $value['name']),
+              wfDocument::createHtmlElement('p1', $value['description'])
+            ), array('class' => 'carousel-caption'))
+          ), array('href' => '/p/products/type/'.$value['product_type_id'].'/'. $this->text_to_link($value['name'])))
+        ), array('class' => "item $active"));
       }
-      $carousel_wshop_indecators[] = wfDocument::createHtmlElement('li', null, array('class' => "$active", 'data-target' => '#carousel-wshop', 'data-slide-to' => $key));
-      $carousel_wshop_inner[] = wfDocument::createHtmlElement('div', array(
-        wfDocument::createHtmlElement('a', array(
-          wfDocument::createHtmlElement('img', null, array('src' => $img_path.'/'.$value['product_type_id'].'.jpg')),
-          wfDocument::createHtmlElement('div', array(
+      $caroulse->setById('carousel-wshop-indicators', 'innerHTML', $carousel_wshop_indecators);
+      $caroulse->setById('carousel-wshop-inner', 'innerHTML', $carousel_wshop_inner);
+      wfDocument::renderElement(array($caroulse->get()));
+    }
+    /**
+     * 
+     */
+    if($bootstrap=='4'){
+      $carousel_wshop_inner = array();
+      foreach ($rs as $key => $value) {
+        $img_src = $img_path.'/'.$value['product_type_id'].'.jpg';
+        $href = '/p/products/type/'.$value['product_type_id'].'/'. $this->text_to_link($value['name']);
+        $carousel_wshop_inner[] = wfDocument::createHtmlElement('div', array(
+          wfDocument::createHtmlElement('a', array(
             wfDocument::createHtmlElement('h1', $value['name']),
             wfDocument::createHtmlElement('p1', $value['description'])
-          ), array('class' => 'carousel-caption'))
-        ), array('href' => '/p/products/type/'.$value['product_type_id'].'/'. $this->text_to_link($value['name'])))
-      ), array('class' => "item $active"));
+          ), array('class' => 'carousel-caption', 'href' => $href))
+        ), array('style' => "background:gray;min-height:300px;background-image: url('$img_src');background-repeat:no-repeat;background-position:center;"));
+      }
+      wfPlugin::enable('bootstrap/carousel_v1');
+      $widget = wfDocument::createWidget('bootstrap/carousel_v1', 'carousel', array('id' => 'my_wshop_carousel', 'item' => $carousel_wshop_inner));
+      wfDocument::renderElement(array($widget));
     }
-    $caroulse->setById('carousel-wshop-indicators', 'innerHTML', $carousel_wshop_indecators);
-    $caroulse->setById('carousel-wshop-inner', 'innerHTML', $carousel_wshop_inner);
-    wfDocument::renderElement(array($caroulse->get()));
   }
   /**
    * 
