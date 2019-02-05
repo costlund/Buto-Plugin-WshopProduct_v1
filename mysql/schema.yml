@@ -6,7 +6,7 @@ extra:
       default: CURRENT_TIMESTAMP
     updated_at:
       type: timestamp
-      default: 'null'
+      default: null
     created_by:
       type: varchar(50)
     updated_by:
@@ -21,7 +21,6 @@ tables:
         primary_key: true
       sort:
         type: int(11)
-        default: 'null'
   wshop_product_type_i18n:
     field:
       product_type_id:
@@ -39,7 +38,6 @@ tables:
         primary_key: true
       name:
         type: varchar(50)
-        default: 'null'
       description:
         type: mediumtext
       description_more:
@@ -53,7 +51,6 @@ tables:
         primary_key: true
       product_type_id:
         type: varchar(50)
-        default: 'null'
         foreing_key:
           reference_table: wshop_product_type
           reference_field: id
@@ -61,7 +58,6 @@ tables:
           on_update: CASCADE
       sort:
         type: int(11)
-        default: 'null'
   wshop_product_param:
     field:
       product_id:
@@ -79,7 +75,6 @@ tables:
         primary_key: true
       value:
         type: mediumtext
-        default: 'null'
   wshop_product_i18n:
     field:
       product_id:
@@ -97,7 +92,6 @@ tables:
         primary_key: true
       name:
         type: varchar(50)
-        default: 'null'
       description:
         type: mediumtext
       description_more:
@@ -111,7 +105,6 @@ tables:
         primary_key: true
       product_id:
         type: varchar(50)
-        default: 'null'
         foreing_key:
           reference_table: wshop_product
           reference_field: id
@@ -119,6 +112,3 @@ tables:
           on_update: CASCADE
       name:
         type: varchar(50)
-        default: 'null'
-
-

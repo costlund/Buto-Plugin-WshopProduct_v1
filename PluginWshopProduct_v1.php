@@ -347,7 +347,9 @@ class PluginWshopProduct_v1{
     }
   }
   public function text_to_link($text){
-    return str_replace(' ', '_', $text);
+    $text = str_replace(' ', '_', $text);
+    $text = str_replace('.', '_', $text);
+    return $text;
   }
   private function getElement($name){
     wfPlugin::includeonce('wf/yml');
