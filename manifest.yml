@@ -18,6 +18,12 @@ plugin:
     version: '1.1'
   -
     name: bootstrap/carousel_v1
+    version: '1.1'
+  -
+    name: wf/table
+    version: '1.6.2'
+  -
+    name: string/array
     version: '1.0'
 sys:
   -

@@ -7,6 +7,7 @@ class PluginWshopProduct_v1{
   public $settings = null;
   public $mysql = null;
   public $sql = null;
+  private $bootstrap = null;
   function __construct($buto=false) {
     if($buto){
       wfPlugin::includeonce('wf/array');
@@ -16,7 +17,16 @@ class PluginWshopProduct_v1{
       $this->settings->set('img_sys_dir', wfSettings::replaceDir( $this->settings->get('img_sys_dir')));
       wfPlugin::includeonce('wf/mysql');
       $this->sql = wfSettings::getSettingsAsObject('/plugin/wshop/product_v1/mysql/sql.yml');
+      wfPlugin::enable('wf/table');
    }
+    /**
+     * Detect Bootstrap version.
+     */
+    $this->bootstrap = '3';
+    $user = wfUser::getSession();
+    if($user->get('plugin/twitter/bootstrap413v/include')){
+      $this->bootstrap = '4';
+    }
   }
   /**
    * 
@@ -176,17 +186,9 @@ class PluginWshopProduct_v1{
      */
     $rs = $this->getRsProductTypeList();
     /**
-     * Detect Bootstrap version.
-     */
-    $bootstrap = '3';
-    $user = wfUser::getSession();
-    if($user->get('plugin/twitter/bootstrap413v/include')){
-      $bootstrap = '4';
-    }    
-    /**
      * 
      */
-    if($bootstrap=='3'){
+    if($this->bootstrap=='3'){
       $first = true;
       $caroulse = new PluginWfYml("/plugin/wshop/product_v1/element/carousel.yml");
       $carousel_wshop_indecators = array();
@@ -215,7 +217,7 @@ class PluginWshopProduct_v1{
     /**
      * 
      */
-    if($bootstrap=='4'){
+    if($this->bootstrap=='4'){
       $carousel_wshop_inner = array();
       foreach ($rs as $key => $value) {
         $img_src = $img_path.'/'.$value['product_type_id'].'.jpg';
@@ -316,67 +318,85 @@ class PluginWshopProduct_v1{
      */
     wfDocument::renderElement(array($list_group->get()));
   }
+  private function getImages($product){
+    $images = array();
+    /**
+     * Images.
+     */
+    if($this->imageExist($product->get('id'))){
+      /**
+       * Primary image.
+       */
+      $images[] = $product->get('id').'.jpg';
+    }
+    for($i=1;$i<10;$i++){
+      /**
+       * More images.
+       */
+      if($this->imageExist($product->get('id').'_'.$i)){
+        $images[] = $product->get('id').'_'.$i.'.jpg';
+      }
+    }
+    return $images;
+  }
   /**
    * PRODUCT.
    */
   public function widget_product(){
-    /**
-     * Product.
-     */
+    $element = $this->getElement('product');
     if(wfArray::get($GLOBALS, 'sys/wshop/product')){
       $product = wfArray::get($GLOBALS, 'sys/wshop/product');
-      wfDocument::renderElement(array(wfDocument::createHtmlElement('h1', $product->get('name'))));
-      wfDocument::renderElement(array(wfDocument::createHtmlElement('h3', $product->get('description'))));
-      wfDocument::renderElement(array(wfDocument::createHtmlElement('p', $product->get('description_more'))));
-      $img_path = $this->settings->get('img_web_dir').'/product';
-      $img_path_public = wfArray::get($GLOBALS, 'sys/app_dir').$this->settings->get('img_sys_dir').'/product';
-      $images = array();
       /**
-       * Images.
+       * Specification
        */
-      if($this->imageExist($product->get('id'))){
-        /**
-         * Primary image.
-         */
-        $images[] = $product->get('id').'.jpg';
-      }
-      for($i=1;$i<10;$i++){
-        /**
-         * More images.
-         */
-        if($this->imageExist($product->get('id').'_'.$i)){
-          $images[] = $product->get('id').'_'.$i.'.jpg';
+      if($product->get('specification')){
+        wfPlugin::includeonce('string/array');
+        $sa = new PluginStringArray();
+        $array = $sa->from_br($product->get('specification'));
+        $rows = new PluginWfArray();
+        foreach ($array as $v) {
+          $temp = new PluginWfArray($sa->from_char($v, ':'));
+          $rows->set($temp->get('0'), $temp->get('1'));
         }
+        $product->set('specification_rows', $rows->get());
+      }else{
       }
+      /**
+       * 
+       */
+      if($this->bootstrap=='3'){
+        $product->set('image_big_class', 'img-rounded img-responsive');
+      }elseif($this->bootstrap=='4'){
+        $product->set('image_big_class', 'img-fluid');
+      }
+      $img_path = $this->settings->get('img_web_dir').'/product';
+      $images = $this->getImages($product);
       if(sizeof($images)>0){
         /**
          * Render primary image.
          */
-        wfDocument::renderElement(array(wfDocument::createHtmlElement('img', null, array('id' => 'image_big', 'class' => 'img-rounded img-responsive', 'src' => $img_path.'/'.$images[0]))));
+        $product->set('image_big', $img_path.'/'.$images[0]);
       }
+      $thumbnail = array();
       if(sizeof($images)>1){
         /**
          * Render more images.
          */
-        $col = array();
         foreach ($images as $key => $value) {
           $img = wfDocument::createHtmlElement('img', null, array('id' => 'image_'.$key, 'class' => 'img-thumbnail', 'src' => $img_path.'/'.$value));
           $a = wfDocument::createHtmlElement('a', array($img), array('onclick' => "document.getElementById('image_big').src=document.getElementById('image_$key').src; return false;"));
-          $col[] = wfDocument::createHtmlElement('div', array($a), array('class' => 'col-md-2'));
+          $thumbnail[] = wfDocument::createHtmlElement('div', array($a), array('class' => 'col-md-2'));
         }
-        $row = wfDocument::createHtmlElement('div', $col, array('class' => 'row'));
-        wfDocument::renderElement(array($row));
+      }
+      $product->set('image_thumbnails', $thumbnail);
+      $element->setByTag($product->get());
+      if(wfArray::get($GLOBALS, 'sys/wshop/product_type')){
+        $product_type = wfArray::get($GLOBALS, 'sys/wshop/product_type');
+        $element->setByTag($product_type->get(), 'type');
       }
     }
-    /**
-     * Product type.
-     */
-    if(wfArray::get($GLOBALS, 'sys/wshop/product_type')){
-      $product_type = wfArray::get($GLOBALS, 'sys/wshop/product_type');
-      wfDocument::renderElement(array(wfDocument::createHtmlElement('h3', $product_type->get('name'))));
-      wfDocument::renderElement(array(wfDocument::createHtmlElement('p', array(wfDocument::createHtmlElement('em', $product_type->get('description'))))));
-      wfDocument::renderElement(array(wfDocument::createHtmlElement('p', array(wfDocument::createHtmlElement('em', $product_type->get('description_more'))))));
-    }
+    //wfHelp::yml_dump($product);
+    wfDocument::renderElement($element->get());
   }
   public function text_to_link($text){
     $text = str_replace(' ', '_', $text);

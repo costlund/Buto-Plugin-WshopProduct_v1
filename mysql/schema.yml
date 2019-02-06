@@ -96,6 +96,8 @@ tables:
         type: mediumtext
       description_more:
         type: mediumtext
+      specification:
+        type: mediumtext
   wshop_article:
     _description: Article
     field:

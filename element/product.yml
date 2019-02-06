@@ -1,0 +1,64 @@
+-
+  type: h1
+  innerHTML: rs:name
+-
+  type: h3
+  innerHTML: rs:description
+-
+  type: p
+  innerHTML: rs:description_more
+-
+  type: div
+  attribute:
+    class: alert alert-dark
+    role: alert
+    style: 'padding:0px'
+  innerHTML: 
+    -
+      type: img
+      settings:
+        enabled: rs:image_big
+      attribute:
+        id: image_big
+        class: rs:image_big_class
+        style: 'min-width:100%'
+        src: rs:image_big
+    -
+      type: div
+      settings:
+        enabled: rs:image_thumbnails
+      attribute:
+        class: row
+      innerHTML: rs:image_thumbnails
+
+-
+  type: h4
+  settings:
+    enabled: rs:specification
+  innerHTML: Specification
+-
+  type: widget
+  settings:
+    enabled: rs:specification
+  data:
+    plugin: wf/table
+    method: render_one
+    data:
+      i18n: false
+      rs: rs:specification_rows
+#        x: 1
+#        y: 2
+#        z: 3
+#      field:
+#        x: X  
+  
+- {type: hr}
+-
+  type: h3
+  innerHTML: type:name
+-
+  type: p
+  innerHTML: type:description
+-
+  type: p
+  innerHTML: type:description_more
