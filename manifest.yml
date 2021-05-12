@@ -1,5 +1,9 @@
-version: '1.1'
+version: 1.1.1
 history:
+  1.1.1:
+    date: '2021-05-12'
+    title: Versions
+    description: 'Versions update.'
   '1.1':
     date: '2019-02-05'
     description: 'Add support for Bootstrap 4 to carousel widget.'
@@ -12,7 +16,7 @@ plugin:
     version: 1.2.0
   -
     name: wf/mysql
-    version: 1.14.0
+    version: 1.14.1
   -
     name: wf/yml
     version: 1.3.0
@@ -21,7 +25,7 @@ plugin:
     version: '1.3'
   -
     name: wf/table
-    version: 1.22.0
+    version: 1.23.0
   -
     name: string/array
     version: '1.2'
