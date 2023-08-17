@@ -399,8 +399,8 @@ class PluginWshopProduct_v1{
     wfDocument::renderElement($element->get());
   }
   public function text_to_link($text){
-    $text = str_replace(' ', '_', $text);
-    $text = str_replace('.', '_', $text);
+    $text = wfPhpfunc::str_replace(' ', '_', $text);
+    $text = wfPhpfunc::str_replace('.', '_', $text);
     return $text;
   }
   private function getElement($name){
@@ -420,8 +420,8 @@ class PluginWshopProduct_v1{
     foreach ($rs['data'] as $key => $value) {
       $ids .= "'".$value['random_product_id']."',";
     }
-    if(strlen($ids)==0) return null;
-    $ids = substr($ids, 0, strlen($ids)-1);
+    if(wfPhpfunc::strlen($ids)==0) return null;
+    $ids = wfPhpfunc::substr($ids, 0, wfPhpfunc::strlen($ids)-1);
     /**
      * Get products.
      */
@@ -497,7 +497,7 @@ class PluginWshopProduct_v1{
         $element->setById('right_column', 'innerHTML', null);
       }
       $element->setById('h4', 'innerHTML', $value['name']);
-      $element->setById('p', 'innerHTML', str_replace("\n", '<br>', $value['description']));
+      $element->setById('p', 'innerHTML', wfPhpfunc::str_replace("\n", '<br>', $value['description']));
       $element->setById('a', 'attribute/href', '/'.$class.'/product/id/'.$value['id'].'/'. $this->text_to_link($value['name']));
       $list_group->set('innerHTML/', $element->get('list_group_item'));
     }
