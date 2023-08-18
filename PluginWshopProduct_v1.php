@@ -40,9 +40,9 @@ class PluginWshopProduct_v1{
     if(wfArray::get($GLOBALS, 'sys/method')=='products' && wfRequest::get('type')){
       $product_type = $this->getProductType($language, wfRequest::get('type'));
       if($product_type){
-        $GLOBALS = wfArray::set($GLOBALS, 'sys/wshop/product_type', $product_type);
-        $GLOBALS = wfArray::set($GLOBALS, 'sys/page/settings/title', $product_type->get('name'));
-        $GLOBALS = wfArray::set($GLOBALS, 'sys/page/settings/description', $product_type->get('description'));
+        wfGlobals::setSys('wshop/product_type', $product_type);
+        wfGlobals::setSys('page/settings/title', $product_type->get('name'));
+        wfGlobals::setSys('page/settings/description', $product_type->get('description'));
       }
     }
     /**
@@ -52,16 +52,16 @@ class PluginWshopProduct_v1{
     if(wfArray::get($GLOBALS, 'sys/method')=='product' && wfRequest::get('id')){
       $product = $this->getProduct($language, wfRequest::get('id'));
       if($product){
-        $GLOBALS = wfArray::set($GLOBALS, 'sys/wshop/product', $product);
-        $GLOBALS = wfArray::set($GLOBALS, 'sys/page/settings/description', $product->get('description'));
+        wfGlobals::setSys('wshop/product', $product);
+        wfGlobals::setSys('page/settings/description', $product->get('description'));
         $product_type = $this->getProductType($language, $product->get('product_type_id'));
         if($product_type){
-          $GLOBALS = wfArray::set($GLOBALS, 'sys/wshop/product_type', $product_type);
+          wfGlobals::setSys('wshop/product_type', $product_type);
         }
         if($product_type){
-          $GLOBALS = wfArray::set($GLOBALS, 'sys/page/settings/title', $product->get('name').' - '.$product_type->get('name'));
+          wfGlobals::setSys('page/settings/title', $product->get('name').' - '.$product_type->get('name'));
         }else{
-          $GLOBALS = wfArray::set($GLOBALS, 'sys/page/settings/title', $product->get('name'));          
+          wfGlobals::setSys('page/settings/title', $product->get('name'));
         }
       }
     }
